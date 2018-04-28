@@ -1,0 +1,28 @@
+query($owner: String!, $name: String!, $branch: String!, $pageSize: Int, $cursor: String){
+  repository(owner: $owner, name: $name) {
+    ref(qualifiedName: $branch) {
+      target {
+        ... on Commit {
+          history(first: $pageSize, after: $cursor) {
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+            nodes {
+              oid
+              status {
+                state
+                contexts {
+                  state
+                  context
+                  createdAt
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+

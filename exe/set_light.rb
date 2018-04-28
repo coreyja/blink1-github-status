@@ -1,34 +1,12 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'octokit'
 require 'blink1'
+require 'json'
 
-class CombinedStatus
-  STATES = %i[success pending failure].freeze
-
-  def initialize(repo:, branch:)
-    @repo = repo
-    @branch = branch
-  end
-
-  STATES.each do |state|
-    define_method "#{state}?" do
-      send(:state) == state
-    end
-  end
-
-  private
-
-  attr_reader :repo, :branch
-
-  def state
-    response[:state].to_sym
-  end
-
-  def response
-    @response ||= Octokit.combined_status(repo, branch)
-  end
-end
+require_relative '../lib/color'
+require_relative '../lib/commit'
 
 if ENV.key? 'BLINK1_GITHUB_TOKEN'
   Octokit.configure do |c|
@@ -46,14 +24,33 @@ unless ARGV[1]
   exit 1
 end
 
-combined_status = CombinedStatus.new(repo: ARGV[0], branch: ARGV[1])
+query = File.read(File.dirname(__FILE__) + '/../queries/commit_statuses.graphql')
+variables = {
+  pageSize: 10,
+  owner: ARGV[0].split('/')[0],
+  name: ARGV[0].split('/')[1],
+  branch: ARGV[1]
+}.to_json
 
-Blink1.open do |blink1|
-  if combined_status.success?
-    blink1.set_rgb(0, 255, 0) # Green
-  elsif combined_status.failure?
-    blink1.set_rgb(255, 0, 0) # Red
+response = Octokit.post 'graphql', { query: query, variables: variables }.to_json
+
+history = response.data.repository.ref.target.history
+page_info = history[:page_info]
+nodes = history[:nodes]
+commits = nodes.map { |node| Commit.new(node) }
+
+commits_with_status = commits.select(&:status?)
+if commits_with_status.empty?
+  Color.purple.set_blink!
+else
+  most_recent_commit = commits_with_status.first
+  if most_recent_commit.waiting?
+    Color.yellow.set_blink!
+    sleep 1
+    most_recent_non_pending = commits.reject(&:pending?).first
+    dim_factor = most_recent_commit.pending_since_dim_factor || 0.5
+    most_recent_non_pending.color.dim_by(dim_factor).set_blink!
   else
-    blink1.set_rgb(255, 255, 0) # Yellow
+    most_recent_commit.color.set_blink!
   end
 end
