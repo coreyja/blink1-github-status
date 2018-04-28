@@ -54,6 +54,6 @@ Blink1.open do |blink1|
   elsif combined_status.failure?
     blink1.set_rgb(255, 0, 0) # Red
   else
-    blink1.set_rgb(255, 255, 0)
+    blink1.set_rgb(255, 255, 0) # Yellow
   end
 end
