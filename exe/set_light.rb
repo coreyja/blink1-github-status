@@ -7,9 +7,7 @@ require 'blink1'
 require_relative '../lib/color'
 require_relative '../lib/commit'
 
-blink1_connected = (Blink1.open { |b| b.on && b.off }) != -1
-
-exit 1 unless blink1_connected
+exit 1 unless Blink1.enumerate != 0
 
 if ENV.key? 'BLINK1_GITHUB_TOKEN'
   Octokit.configure do |c|
