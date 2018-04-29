@@ -3,7 +3,6 @@
 
 require 'octokit'
 require 'blink1'
-require 'json'
 
 require_relative '../lib/color'
 require_relative '../lib/commit'
