@@ -50,6 +50,7 @@ else
     sleep 1
     most_recent_non_pending = commits.reject(&:pending?).first
     dim_factor = most_recent_commit.pending_since_dim_factor || 0.5
+    dim_factor = [dim_factor, 0.85].min
     most_recent_non_pending.color.dim_by(dim_factor).set_blink!
   else
     most_recent_commit.color.set_blink!
