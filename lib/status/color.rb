@@ -33,19 +33,24 @@ module Status
       [r, g, b]
     end
 
+    def named?
+      !name.nil?
+    end
+
+    def name
+      DEFINED_COLORS.invert[rgb]
+    end
+
+    def hex
+      "\##{rgb.map { |x| format('%02X', x) }.join}"
+    end
+
     def dim_by(dim_factor)
       multiplication_factor = 1.0 - dim_factor
       self.r *= multiplication_factor
       self.g *= multiplication_factor
       self.b *= multiplication_factor
       self
-    end
-
-    def set_blink!
-      blink1 = Blink1.new
-      blink1.open
-      blink1.set_rgb(*rgb)
-      blink1.close
     end
   end
 end

@@ -3,7 +3,7 @@
 
 require 'status'
 
-exit 1 unless Blink1.enumerate != 0
+# exit 1 unless Blink1.enumerate != 0
 
 if ENV.key? 'BLINK1_GITHUB_TOKEN'
   Octokit.configure do |c|
@@ -21,11 +21,13 @@ unless ARGV[1]
   exit 1
 end
 
+# outputs = [Status::Outputs::Blink1, Status::Outputs::Logger]
+outputs = [Status::Outputs::Logger]
+
 query = Status::GithubQuery.new(owner: ARGV[0].split('/')[0], name: ARGV[0].split('/')[1], branch: ARGV[1])
 
 colors = Status::ColorGenerator.new(query.commits).colors
 colors.each do |c|
-  p c.rgb
-  c.set_blink!
+  outputs.each { |output| output.new(c).output! }
   sleep 1
 end
