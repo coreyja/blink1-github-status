@@ -21,34 +21,11 @@ unless ARGV[1]
   exit 1
 end
 
-query = File.read(File.dirname(__FILE__) + '/../queries/commit_statuses.graphql')
-variables = {
-  pageSize: 10,
-  owner: ARGV[0].split('/')[0],
-  name: ARGV[0].split('/')[1],
-  branch: ARGV[1]
-}.to_json
+query = Status::GithubQuery.new(owner: ARGV[0].split('/')[0], name: ARGV[0].split('/')[1], branch: ARGV[1])
 
-response = Octokit.post 'graphql', { query: query, variables: variables }.to_json
-
-history = response.data.repository.ref.target.history
-_page_info = history[:page_info]
-nodes = history[:nodes]
-commits = nodes.map { |node| Status::Commit.new(node) }
-
-commits_with_status = commits.select(&:status?)
-if commits_with_status.empty?
-  Status::Color.purple.set_blink!
-else
-  most_recent_commit = commits_with_status.first
-  if most_recent_commit.waiting?
-    Status::Color.yellow.set_blink!
-    sleep 1
-    most_recent_non_pending = commits.reject(&:pending?).first
-    dim_factor = most_recent_commit.pending_since_dim_factor || 0.5
-    dim_factor = [dim_factor, 0.85].min
-    most_recent_non_pending.color.dim_by(dim_factor).set_blink!
-  else
-    most_recent_commit.color.set_blink!
-  end
+colors = Status::ColorGenerator.new(query.commits).colors
+colors.each do |c|
+  p c.rgb
+  c.set_blink!
+  sleep 1
 end

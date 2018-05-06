@@ -11,14 +11,14 @@ module Status
 
     attr_accessor :r, :g, :b
 
-    def initialize(r:, g:, b:)
-      self.r = r
-      self.g = g
-      self.b = b
+    def initialize(red:, green:, blue:)
+      self.r = red
+      self.g = green
+      self.b = blue
     end
 
     def self.from_rgb(rgb)
-      new r: rgb[0], g: rgb[1], b: rgb[2]
+      new red: rgb[0], green: rgb[1], blue: rgb[2]
     end
 
     DEFINED_COLORS.each do |name, rgb|
@@ -33,16 +33,15 @@ module Status
       [r, g, b]
     end
 
-    def dim_by(x)
-      factor = 1.0 - x
-      self.r *= factor
-      self.g *= factor
-      self.b *= factor
+    def dim_by(dim_factor)
+      multiplication_factor = 1.0 - dim_factor
+      self.r *= multiplication_factor
+      self.g *= multiplication_factor
+      self.b *= multiplication_factor
       self
     end
 
     def set_blink!
-      p rgb
       blink1 = Blink1.new
       blink1.open
       blink1.set_rgb(*rgb)
