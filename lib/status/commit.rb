@@ -47,13 +47,21 @@ module Status
     end
 
     def pending_since_dim_factor
-      node.status.contexts.select { |s| s.state.to_sym == :PENDING }.map do |c|
-        minutes_ago = (Time.now - Time.parse(c.createdAt)) / 60.0
-        minutes_ago * 0.01
-      end.max
+      pending_context_dim_factors.max
     end
 
     private
+
+    def pending_context_dim_factors
+      pending_contexts.map do |c|
+        minutes_ago = (Time.now - Time.parse(c.createdAt)) / 60.0
+        minutes_ago * 0.01
+      end
+    end
+
+    def pending_contexts
+      node.status.contexts.select { |s| s.state.to_sym == :PENDING }
+    end
 
     attr_reader :node
   end
