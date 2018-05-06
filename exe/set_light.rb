@@ -3,8 +3,6 @@
 
 require 'status'
 
-# exit 1 unless Blink1.enumerate != 0
-
 if ENV.key? 'BLINK1_GITHUB_TOKEN'
   Octokit.configure do |c|
     c.access_token = ENV.fetch('BLINK1_GITHUB_TOKEN')
@@ -12,22 +10,25 @@ if ENV.key? 'BLINK1_GITHUB_TOKEN'
 end
 
 unless ARGV[0]
-  p 'Repo is required as the first arg ex: someoneCool/theBestProject'
+  puts 'Repo is required as the first arg ex: someoneCool/theBestProject'
   exit 1
 end
 
 unless ARGV[1]
-  p 'Branch is required as the first arg ex: master'
+  puts 'Branch is required as the first arg ex: master'
   exit 1
 end
 
 # outputs = [Status::Outputs::Blink1, Status::Outputs::Logger]
-outputs = [Status::Outputs::Logger]
+outputs = [Status::Outputs::Blink1.new, Status::Outputs::Logger.new, Status::Outputs::Lifx.new]
+
+availible_outputs = outputs.select(&:available?)
+exit 0 if availible_outputs.empty?
 
 query = Status::GithubQuery.new(owner: ARGV[0].split('/')[0], name: ARGV[0].split('/')[1], branch: ARGV[1])
 
 colors = Status::ColorGenerator.new(query.commits).colors
 colors.each do |c|
-  outputs.each { |output| output.new(c).output! }
+  availible_outputs.each { |output| output.output!(c) }
   sleep 1
 end

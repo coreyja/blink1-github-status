@@ -3,19 +3,15 @@
 module Status
   module Outputs
     class Logger
-      def initialize(color)
-        @color = color
+      def available?
+        true
       end
 
-      def output!
+      def output!(color)
         puts "RGB: #{color.rgb}"
         puts "Hex: #{color.hex}"
         puts "Name: #{color.name}" if color.named?
       end
-
-      private
-
-      attr_reader :color
     end
   end
 end

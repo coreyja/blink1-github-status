@@ -33,7 +33,7 @@ module Status
     end
 
     def most_recent_non_pending
-      @most_recent_non_pending ||= commits_with_status.reject(&:waiting?).first
+      @most_recent_non_pending ||= commits_with_status.find { |x| !x.waiting? }
     end
 
     def commits_with_status
