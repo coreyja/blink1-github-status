@@ -1,11 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'octokit'
-require 'blink1'
-
-require_relative '../lib/color'
-require_relative '../lib/commit'
+require 'status'
 
 exit 1 unless Blink1.enumerate != 0
 
@@ -36,17 +32,17 @@ variables = {
 response = Octokit.post 'graphql', { query: query, variables: variables }.to_json
 
 history = response.data.repository.ref.target.history
-page_info = history[:page_info]
+_page_info = history[:page_info]
 nodes = history[:nodes]
-commits = nodes.map { |node| Commit.new(node) }
+commits = nodes.map { |node| Status::Commit.new(node) }
 
 commits_with_status = commits.select(&:status?)
 if commits_with_status.empty?
-  Color.purple.set_blink!
+  Status::Color.purple.set_blink!
 else
   most_recent_commit = commits_with_status.first
   if most_recent_commit.waiting?
-    Color.yellow.set_blink!
+    Status::Color.yellow.set_blink!
     sleep 1
     most_recent_non_pending = commits.reject(&:pending?).first
     dim_factor = most_recent_commit.pending_since_dim_factor || 0.5
