@@ -2,17 +2,19 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>Label</key>
-    <string>com.coreyja.status.sample</string>
-    <key>ProgramArguments</key>
-    <array>
-        <string>~/Projects/status/exe/set_light.rb coreyja/status master</string>
-    </array>
-    <key>StartInterval</key>
-    <integer>1</integer>
-    <key>StandardErrorPath</key>
-    <string>/var/log/com.coreyja.status.sample/status.err</string>
-    <key>StandardOutPath</key>
-    <string>/var/log/com.coreyja.status.sample//status.out</string>
+	<key>Label</key>
+	<string>com.coreyja.status.sample</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/coreyja/.rbenv/versions/2.6.2/bin/status-set-light.rb</string>
+		<string>coreyja/status</string>
+		<string>master</string>
+	</array>
+	<key>StandardErrorPath</key>
+	<string>/tmp/log/com.coreyja.status.sample/status.err</string>
+	<key>StandardOutPath</key>
+	<string>/tmp/log/com.coreyja.status.sample/status.out</string>
+	<key>StartInterval</key>
+	<integer>15</integer>
 </dict>
 </plist>
