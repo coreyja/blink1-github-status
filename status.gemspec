@@ -6,7 +6,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'status/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'status'
+  spec.name          = 'status-light'
   spec.version       = Status::VERSION
   spec.authors       = ['Corey Alexander']
   spec.email         = ['coreyja@gmail.com']
