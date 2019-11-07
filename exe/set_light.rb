@@ -19,7 +19,6 @@ unless ARGV[1]
   exit 1
 end
 
-# outputs = [Status::Outputs::Blink1, Status::Outputs::Logger]
 outputs = [Status::Outputs::Blink1.new, Status::Outputs::Logger.new, Status::Outputs::Lifx.new]
 
 availible_outputs = outputs.select(&:available?)

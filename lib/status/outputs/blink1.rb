@@ -8,9 +8,9 @@ module Status
       end
 
       def output!(color)
-        blink1 = Blink1.new
+        blink1 = ::Blink1.new
         blink1.open
-        blink1.set_rgb(color.rgb)
+        blink1.set_rgb(*color.rgb)
         blink1.close
       end
     end
